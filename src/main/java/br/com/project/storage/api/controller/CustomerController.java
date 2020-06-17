@@ -1,10 +1,13 @@
 package br.com.project.storage.api.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +30,11 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 
-//	@GetMapping
-//	public ResponseEntity<?> listCustomers() {
-//		List<CustomerModel> customersList = 
-//	}
+	@GetMapping
+	public ResponseEntity<?> listCustomers() {
+		List<CustomerModel> customersList = customerService.listCustomers();
+		return new ResponseEntity<Iterable<CustomerModel>>(customersList, HttpStatus.OK);
+	}
 
 	@GetMapping("/findByCpf/{customerCPF}")
 	public ResponseEntity<CustomerModel> findCustomerByCPF(@PathVariable String customerCPF) {
@@ -44,15 +48,16 @@ public class CustomerController {
 		return new ResponseEntity<CustomerModel>(registeredCustomer, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/inactivate/{customerCPF}")
+	@PutMapping("/reactivate/{customerCPF}")
+	public ResponseEntity<Void> reactivateCustomer(@PathVariable String customerCPF) {
+		customerService.reactivateCustomer(customerCPF);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+
+	@DeleteMapping("/inactivate/{customerCPF}")
 	public ResponseEntity<Void> inactivateCustomer(@PathVariable String customerCPF) {
 		customerService.inactivateCustomer(customerCPF);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
-	
-	@PutMapping("/reactivate/{customerCPF}")
-	public ResponseEntity<Void> reactivateCustomer(@PathVariable String customerCPF){
-		customerService.reactivateCustomer(customerCPF);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
+
 }

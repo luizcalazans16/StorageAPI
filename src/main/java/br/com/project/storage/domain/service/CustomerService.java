@@ -12,13 +12,14 @@ import br.com.project.storage.domain.model.Customer;
 import br.com.project.storage.domain.repository.CustomerRepository;
 import br.com.project.storage.exceptions.BusinessException;
 import br.com.project.storage.exceptions.ExistingCustomerException;
+import br.com.project.storage.exceptions.InactiveCustomerException;
 
 @Service
 public class CustomerService {
 
 	@Autowired
 	private CustomerRepository customerRepository;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -38,7 +39,7 @@ public class CustomerService {
 			throw new BusinessException("Inválido");
 		}
 		if (customer.getActive() == 0) {
-			throw new BusinessException("Inválido");
+			throw new InactiveCustomerException();
 		}
 		return new CustomerModel(customer);
 	}
@@ -51,14 +52,28 @@ public class CustomerService {
 		return false;
 
 	}
-	
-	public List<CustomerModel> listCustomers(){
+
+	public List<CustomerModel> listCustomers() {
 		List<CustomerModel> customersList = new ArrayList<>();
-		for(Customer customer : customerRepository.findAll()) {
-			if(customer.getActive() == 1)
-					customersList.add(toCustomerModel(customer));
+		for (Customer customer : customerRepository.findAll()) {
+			if (customer.getActive() == 1)
+				customersList.add(toCustomerModel(customer));
 		}
+		if (noResults(customersList))
+			throw new BusinessException("Nenhum cliente encontrado");
 		return customersList;
+	}
+
+	public CustomerModel updateCustomer(String customerCPF, Customer customer) {
+		Customer customerToBeUpdated = customerRepository.findByCpf(customerCPF);
+		if (customerToBeUpdated == null || customerToBeUpdated.getActive() == 0) {
+			throw new BusinessException("Um cliente válido deve ser informado.");
+		}
+		if (customer.getCpf() != null) {
+			throw new BusinessException("O CPF não pode ser alterado.");
+		}
+		customerRepository.save(customerToBeUpdated);
+		return new CustomerModel(customerToBeUpdated);
 	}
 
 	public void inactivateCustomer(String customerCPF) {
@@ -68,28 +83,31 @@ public class CustomerService {
 		} else if (customerToBeUpdated.getActive() == 0) {
 			throw new BusinessException("Cliente já encontra-se inativo no sistema.");
 		}
-		
+
 		customerToBeUpdated.inactivate();
 		customerRepository.save(customerToBeUpdated);
-		
+
 	}
 
 	public void reactivateCustomer(String customerCPF) {
 		Customer customerToBeUpdated = customerRepository.findByCpf(customerCPF);
-		if(customerToBeUpdated == null) {
+		if (customerToBeUpdated == null) {
 			throw new BusinessException("Cliente não cadastrado no sistema");
-		}
-		else if(customerToBeUpdated.getActive() == 1) {
+		} else if (customerToBeUpdated.getActive() == 1) {
 			throw new BusinessException("Cliente já encontra-se ativo no sistema");
 		}
-		
+
 		customerToBeUpdated.reactivate();
 		customerRepository.save(customerToBeUpdated);
-		
+
 	}
 
-	
 	private CustomerModel toCustomerModel(Customer customer) {
 		return modelMapper.map(customer, CustomerModel.class);
 	}
+
+	private boolean noResults(List<CustomerModel> customerModelList) {
+		return customerModelList.isEmpty();
+	}
+
 }
