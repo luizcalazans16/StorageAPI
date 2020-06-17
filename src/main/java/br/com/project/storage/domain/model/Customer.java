@@ -3,12 +3,15 @@ package br.com.project.storage.domain.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +26,7 @@ public class Customer {
 	private String cpf;
 
 	private String name;
-	
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "birth_Date")
 	private Calendar birthDate;
@@ -33,20 +36,22 @@ public class Customer {
 	@Enumerated(EnumType.STRING)
 	private CustomerGenderEnum gender;
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+	private List<CustomerAddresses> addresses;
+
 	private Byte active = 1;
-	
+
 	@Deprecated
 	public Customer() {
-		
+
 	}
 
-	public Customer(String cpf, String name, Calendar birthDate, CustomerGenderEnum gender,
-			Byte active) {
-		super();	
+	public Customer(String cpf, String name, Calendar birthDate, CustomerGenderEnum gender, List<CustomerAddresses> addresses, Byte active) {
+		super();
 		this.cpf = cpf;
 		this.name = name;
 		this.birthDate = birthDate;
-		
+		this.addresses = addresses;
 		this.gender = gender;
 		this.active = active;
 	}
@@ -74,7 +79,7 @@ public class Customer {
 	public void setBirthDate(Calendar birthDate) {
 		this.birthDate = birthDate;
 	}
-	
+
 	public void setBirthDate(String birthDate) {
 		try {
 			Calendar calendar = Calendar.getInstance();
@@ -105,6 +110,14 @@ public class Customer {
 		this.gender = gender;
 	}
 
+	public List<CustomerAddresses> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<CustomerAddresses> addresses) {
+		this.addresses = addresses;
+	}
+
 	public Byte getActive() {
 		return active;
 	}
@@ -112,11 +125,11 @@ public class Customer {
 	public void setActive(Byte active) {
 		this.active = active;
 	}
-	
+
 	public void inactivate() {
 		setActive((byte) 0);
 	}
-	
+
 	public void reactivate() {
 		setActive((byte) 1);
 	}

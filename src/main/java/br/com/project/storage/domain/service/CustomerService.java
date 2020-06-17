@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.project.storage.api.model.CustomerModel;
 import br.com.project.storage.domain.model.Customer;
+import br.com.project.storage.domain.model.CustomerAddresses;
 import br.com.project.storage.domain.repository.CustomerRepository;
 import br.com.project.storage.exceptions.BusinessException;
 import br.com.project.storage.exceptions.ExistingCustomerException;
@@ -25,6 +26,9 @@ public class CustomerService {
 
 	public CustomerModel register(Customer customer) {
 		if (!existingCustomer(customer.getCpf()))
+			for(CustomerAddresses customerAddresses : customer.getAddresses()) {
+				customerAddresses.setCustomer(customer);
+			}
 			customerRepository.save(customer);
 		return new CustomerModel(customer);
 	}

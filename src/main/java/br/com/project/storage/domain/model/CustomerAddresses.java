@@ -14,6 +14,7 @@ public class CustomerAddresses {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Long id;
 
 	private String addressLine;
