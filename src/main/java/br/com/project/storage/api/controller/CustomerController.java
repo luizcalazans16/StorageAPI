@@ -24,9 +24,6 @@ import br.com.project.storage.domain.service.CustomerService;
 @RequestMapping("/customers")
 public class CustomerController {
 
-//	@Autowired
-//	private CustomerRepository customerRepository;
-
 	@Autowired
 	private CustomerService customerService;
 

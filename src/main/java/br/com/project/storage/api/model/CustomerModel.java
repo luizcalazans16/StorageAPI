@@ -18,6 +18,8 @@ public class CustomerModel {
 
 	private String name;
 
+	private String email;
+
 	private String phone;
 	@Enumerated(EnumType.STRING)
 	private CustomerGenderEnum gender;
@@ -30,6 +32,7 @@ public class CustomerModel {
 	public CustomerModel(Customer customer) {
 		setCpf(customer.getCpf());
 		setName(customer.getName());
+		setEmail(customer.getEmail());
 		setPhone(customer.getPhone());
 		setGender(customer.getGender());
 		setAddresses(customer.getAddresses());
@@ -50,6 +53,14 @@ public class CustomerModel {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPhone() {

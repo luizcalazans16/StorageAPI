@@ -12,6 +12,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,6 +27,9 @@ public class Customer {
 	private String cpf;
 
 	private String name;
+
+	@Email
+	private String email;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "birth_Date")
@@ -46,10 +50,12 @@ public class Customer {
 
 	}
 
-	public Customer(String cpf, String name, Calendar birthDate, CustomerGenderEnum gender, List<CustomerAddresses> addresses, Byte active) {
+	public Customer(String cpf, String name, String email, Calendar birthDate, CustomerGenderEnum gender,
+			List<CustomerAddresses> addresses, Byte active) {
 		super();
 		this.cpf = cpf;
 		this.name = name;
+		this.email = email;
 		this.birthDate = birthDate;
 		this.addresses = addresses;
 		this.gender = gender;
@@ -70,6 +76,14 @@ public class Customer {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Calendar getBirthDate() {
